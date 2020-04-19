@@ -50,6 +50,6 @@ style=\"height: 20px; float: right; background-color: %s; width: 80%; outline: n
             0 hexes)))
 
 ;code executed on page load
-(render-map (make-hex-map 20 20 default-color))
+(render-map (make-hex-map 40 40 default-color))
 (load-toolbar (list "red" "green" "blue" "purple" "black" "grey"))
 (.addEventListener js/window "load" load-event-listener false)
