@@ -45,16 +45,22 @@ style=\"height: 20px; float: right; background-color: %s; width: 80%; outline: n
       (reduce (fn [idx button] (do (.addEventListener button "click" #(button-listener idx) false) (+ idx 1)))
               0 buttons)))
 
-; TODO
+; TODO: still a little bit broken lol
 (defn hex-distance [r1 c1 r2 c2]
-  0)
+  (let [abs-ver-distance (Math/abs (- r1 r2))
+        abs-hor-distance (Math/abs (- c1 c2))
+        diag-distance (Math/min abs-ver-distance (* abs-hor-distance 2))
+        rel-ver-distance (Math/max (- abs-ver-distance diag-distance) 0)
+        rel-hor-distance (Math/max (- abs-hor-distance (quot diag-distance 2)) 0)]
+    (+ rel-ver-distance rel-hor-distance diag-distance)))
 
 (defn display-distance [base-hex-id hex-id]
   (let [base-row (int (/ base-hex-id num-hexes-ver))
         base-col (mod base-hex-id num-hexes-hor)
         hex-row (int (/ hex-id num-hexes-ver))
-        hex-col (mod hex-id num-hexes-hor)]
-  (js/alert (hex-distance base-row base-col hex-row hex-col))))
+        hex-col (mod hex-id num-hexes-hor)
+        distance (hex-distance base-row base-col hex-row hex-col)]
+    (set! (. (. js/document getElementById "distance") -innerHTML) (str "DISTANCE: " distance))))
 
 (defn distance-listener-on [base-hex-id]
   (let [hexes (array-seq (. js/document getElementsByClassName "hex"))]
