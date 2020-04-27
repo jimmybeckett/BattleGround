@@ -19,10 +19,6 @@
 style=\"height: 20px; float: right; background-color: %s; width: 80%; outline: none;\"></button>")
 (def hex-html-format-str "<use xlink:href=\"#hex-def\" class=\"hex\" %s%stransform=\"translate(%i, %i) scale(%i)\"/>")
 
-;global variables
-(def ^:dynamic *curr-cursor-color* default-color)
-;(def ^:dynamic *hex-listener* (fn [hex-id event] nil))
-
 ;functions
 (defn render-map [hex-map]
   (set! (. (. js/document getElementById "hexes") -innerHTML) (string/join "\n" hex-map)))
@@ -91,9 +87,7 @@ style=\"height: 20px; float: right; background-color: %s; width: 80%; outline: n
                   (+ idx 1)))
             0 buttons))
   (g-events/listen (. js/document getElementById "distance") "click"
-                   #(do (clear-hex-listeners)
-                        (add-hex-listener (fn [hex-id _] (anchor-distance hex-id))
-                                          "click"))))
+                   #(do (clear-hex-listeners) (add-hex-listener (fn [hex-id _] (anchor-distance hex-id)) "click"))))
 
 
 ;code executed on page load
