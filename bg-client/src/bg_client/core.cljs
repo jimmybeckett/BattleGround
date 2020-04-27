@@ -44,19 +44,22 @@ style=\"height: 20px; float: right; background-color: %s; width: 80%; outline: n
         rel-hor-distance (Math/max (- abs-hor-distance (quot diag-distance 2)) 0)]
     (+ rel-ver-distance rel-hor-distance diag-distance)))
 
+(defn set-distance [distance]
+  (set! (. (. js/document getElementById "distance") -innerHTML) (str "DISTANCE: " distance)))
+
 (defn display-distance [base-hex-id hex-id]
   (let [base-row (int (/ base-hex-id num-hexes-ver))
         base-col (mod base-hex-id num-hexes-hor)
         hex-row (int (/ hex-id num-hexes-ver))
         hex-col (mod hex-id num-hexes-hor)
         distance (hex-distance base-row base-col hex-row hex-col)]
-    (set! (. (. js/document getElementById "distance") -innerHTML) (str "DISTANCE: " distance))))
+    (set-distance distance)))
 
 (defn add-listener [listener event items]
   (reduce (fn [idx hex] (do (g-events/listen hex event #(listener idx %)) (+ idx 1))) 0 items))
 
 (defn clear-listeners [items]
-  (reduce (fn [_ hex] (println (g-events/removeAll hex))) items))
+  (reduce (fn [_ hex] (g-events/removeAll hex)) items))
 
 (defn get-hexes []
   (array-seq (. js/document getElementsByClassName "hex")))
@@ -73,7 +76,10 @@ style=\"height: 20px; float: right; background-color: %s; width: 80%; outline: n
 (defn anchor-distance [base-hex-id]
   (clear-hex-listeners)
   (set-hex-fill base-hex-id distance-color)
-  (add-hex-listener (fn [hex-id _] (display-distance base-hex-id hex-id)) "mouseover"))
+  (add-hex-listener (fn [hex-id _] (display-distance base-hex-id hex-id)) "mouseover")
+  (g-events/listenOnce js/window "mouseup" #(do (clear-hex-listeners)
+                                                (set-distance "")
+                                                (set-hex-fill base-hex-id default-color))))
 
 (defn load-toolbar [colors]
   (do
